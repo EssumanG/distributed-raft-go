@@ -7,29 +7,26 @@ import (
 )
 
 func main() {
-	nodeIDs := []string{"node1", "node2", "node3"}
+	nodes := map[string]string{
+		"node4": "localhost:8001",
+		"node2": "localhost:8002",
+		"node3": "localhost:8003",
+	}
 
-	nodes := []*node.Node{}
+	for id, addr := range nodes {
+		peers := map[string]string{}
 
-	for _, id := range nodeIDs {
-		peers := []string{}
-
-		for _, peerID := range nodeIDs {
-			if peerID != id {
-				peers = append(peers, peerID)
+		for pid, paddr := range nodes {
+			if pid != id {
+				peers[pid] = paddr
 			}
 		}
-		n := node.NewMode(id, peers)
-		nodes = append(nodes, n)
-
-	}
-
-	for _, n := range nodes {
+		n := node.NewMode(id, addr, peers)
 		go n.Start()
-	}
 
+	}
 	// Keep cluster running
 	for {
-		time.Sleep(5 * time.Second)
+		time.Sleep(10 * time.Second)
 	}
 }
