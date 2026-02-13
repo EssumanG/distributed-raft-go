@@ -1,0 +1,52 @@
+syntax = "proto3";
+
+package rpc;
+
+option go_package = "distributed-system/internal/rpc";
+
+//The consensus servicehandles node to node communication
+service ConsensusService {
+    //RequestVote is used during leader elction
+    rpc RequestVote(VoteRequest) returns (VoteResponse);
+
+    //appendEntries is used for heartbeats and log replication
+    rpc AppendEntries(AppendEntriesRequest) returns (AppendEntriesResponse);
+}
+
+// VoteRequest is sent by candidate during leader election
+message VoteRequest {
+    int32 term = 1;
+    string candidate_id = 2;
+    int32 last_log_index = 3;
+    int32 last_log_term = 4;
+}
+
+message VoteResponse {
+    int32 term = 1;
+    bool vote_granted = 2;
+}
+
+
+//AppendEntriesRequest is sent by leader to replicate log entries
+message AppendEntriesRequest {
+    int32 term = 1;
+    string leader_id = 2;
+    int32 prev_log_index = 3;
+    int32 prev_log_term = 4;
+    repeated LogEntry entries = 5;
+    int32 leader_commit = 6; //leader's commit index
+}
+
+message AppendEntriesResponse {
+    int32 term = 1;
+    bool success = 2;   //True if flolwer contained entry matchin prev_log_inx and pre_log_term
+    int32 conflict_index = 3; //For faster log backtracking on conflict
+}
+
+
+// LogEntry represents a single entry in the replicate log
+message LogEntry {
+    int32 term = 1; //Term when entry was recieved by leader
+    int32 index = 2; //Possition in the log
+    bytes command = 3; //Stae machine command
+}
