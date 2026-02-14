@@ -1,2 +1,25 @@
-cmd/client/
-cmd/cluster
+
+
+
+# Binaries
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+
+# Build output
+/bin
+/build
+/dist
+
+# Test output
+*.test
+
+# Coverage
+*.out
+
+# IDE / OS
+.vscode/
+.idea/
+.DS_Store
